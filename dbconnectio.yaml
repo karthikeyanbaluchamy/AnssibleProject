@@ -1,0 +1,37 @@
+- name: db connection testing
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    students: {}
+    db_name: "StudentDetail"
+    db_user: "postgres"
+    db_password: "admin"
+    db_host: "192.168.200.129"
+    db_port: "5432"
+
+  tasks:
+    - name: Run a query on the PostgreSQL database
+      community.postgresql.postgresql_query:
+        db: "{{ db_name }}"
+        query: "select * from studentinfo;"
+        login_user: "{{ db_user }}"
+        login_password: "{{ db_password }}"
+        login_host: "{{ db_host }}"
+        login_port: "{{ db_port }}"
+      register: query_result
+
+    - name: Output query result
+      debug:
+        var: query_result
+
+    - name: iterate the value
+      set_fact:
+        students: "{{students | combine({item.major:(students[item.major]| default([])+[item.name])})}}"   
+      loop: "{{query_result.query_result}}" 
+
+    - name: print the students details
+      debug:
+        var: students
+
+        

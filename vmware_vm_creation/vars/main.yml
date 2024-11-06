@@ -1,0 +1,8 @@
+---
+# vars file for vmware_vm_creation
+apidata: "https://jsonplaceholder.typicode.com/posts/1"
+db_host: "localhost"
+db_port: 5432
+db_name: "StudentDetail"
+db_user: "postgres"
+db_password: "admin"

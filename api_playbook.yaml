@@ -1,0 +1,5 @@
+---
+- name: Make an API call to a public API
+  hosts: localhost
+  roles:
+    - vmware_vm_creation

@@ -1,0 +1,7 @@
+{
+    "ansible.python.interpreterPath": "c:\\Users\\karth\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "yaml.schemas": {
+        "https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible.json": "/*.yml"
+    }
+
+}

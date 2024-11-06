@@ -1,0 +1,51 @@
+---
+- name: make the api call
+  uri:
+    url: "{{apidata}}"
+    method: GET
+    return_content: yes
+    status_code: 200
+  register: api_response
+  
+- name: Print the API response
+  debug:
+    var: api_response.content
+
+- name: Convert API response to JSON
+  set_fact:
+    user_data: "{{ api_response.json }}"
+
+- name: Create dynamic HTML row 
+  set_fact:
+     table_row: |
+       <tr>
+         <td>{{user_data.userId}}</td>
+         <td>{{user_data.userId}}</td>
+       </tr>
+- name: Read the HTML template using slurp
+  slurp:
+    src: "vmware_vm_creation/templates/email_template.html"
+  register: slurped_template
+  
+- name: Decode slurped content and insert table row
+  set_fact:
+    email_body: "{{ slurped_template.content | b64decode | replace('{{ table_rows }}', table_row) }}"
+
+- name: Debug the email body
+  debug:
+    msg: "{{ email_body }}"    
+
+- name: Send email
+  mail:
+    host: smtp.office365.com
+    port: 587
+    username: "karthikeyan.baluchamy@outlook.com"
+    password: "Vidhya1982"
+    to:
+      - "navi.karthi@outlook.com"
+    subject: "Subject of the Email"
+    #body: "{{email_body}}"
+    secure: starttls
+    sender: "karthikeyan.baluchamy@outlook.com"
+    charset: "utf-8"  # Corrected parameter name
+    subtype: "html"

@@ -1,0 +1,77 @@
+---
+- name: test the expression
+  hosts: localhost
+  vars:
+   doubled_ages: []
+   users:
+     - name: Alice
+       age: 25
+     - name: Bob
+       age: 30
+     - name: Charlie
+       age: 35
+   students:
+      - name: "John"
+        grade: "A"
+      - name: "Doe"
+        grade: "B"
+      - name: "Alice"
+        grade: "A"
+      - name: "Bob"
+        grade: "C"   
+   people:
+     - first_name: "John"
+       last_name: "Doe"
+     - first_name: "Alice"
+       last_name: "Smith"    
+  tasks:
+    
+        
+
+    - name: docuble the age
+      set_fact:
+        doubled_ages: "{{ doubled_ages+[ {'name' : item.name,'age':(item.age*2)}]}}"
+      loop: "{{users}}"  
+     
+    - name: print the doubled_ages
+      debug:
+        msg: "{{doubled_ages}}"  
+
+    -  name: example of selctattr
+       set_fact:
+         group_grades: "{{ students | selectattr('grade','equalto','A') | list}}"  
+
+    - name: print group grades
+      debug:
+        msg: "{{ group_grades }}"        
+    
+    - name: extract students name
+      set_fact:
+        student_names: "{{ students | map(attribute='name') | list }}"
+
+    - name: print Output from map
+      debug:
+        msg: "The list of students are {{ student_names }}"
+    - name: some complex functionformap
+      set_fact:
+        full_names: "{{ people | map(attribute='first_name') | zip(people | map(attribute='last_name')) | map('join', ' ') | list }}"
+    - name: print the full full_names
+      debug: 
+        msg: "{{ full_names }}"
+
+    - name: Combine first and last names into a dictionary with 'fullname'
+      set_fact:
+        full_names_dict: "{{ people | map('combine', {'fullname': item.first_name + ' ' + item.last_name}) | list }}"
+      loop: "{{people}}"
+    - name: Print full names dictionary
+      debug:
+        msg: "{{ full_names_dict }}" 
+    - name: Create list of dicts with only fullname
+      set_fact:
+        full_names_list_of_dicts: "{{ full_names_dict | map('combine', {'fullname': item.fullname}) | list }}"
+      loop: "{{ full_names_dict }}"
+    - name: Print the list of dictionaries with full names
+      debug:
+        msg: "{{ full_names_list_of_dicts }}"  
+
+          
